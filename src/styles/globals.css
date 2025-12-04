@@ -1,0 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=Bubblegum+Sans&family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --mango-yellow: #FFB300;
+    --fresh-orange: #FF8C42;
+    --leaf-green: #4CAF50;
+    --pale-yellow: #FFF9E6;
+  }
+
+  body {
+    font-family: 'Be Vietnam Pro', sans-serif;
+    background-color: var(--pale-yellow);
+    background-image: 
+      url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23FFD54F' fill-opacity='0.15'%3E%3Cpath d='M30 15c-4 0-7 2-8 5-1-3-4-5-8-5-5 0-9 4-9 9 0 7 8 13 17 18 9-5 17-11 17-18 0-5-4-9-9-9z'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 60px 60px;
+  }
+
+  h1 {
+    font-family: 'Bubblegum Sans', cursive;
+  }
+
+  h2 {
+    font-family: 'Be Vietnam Pro', sans-serif;
+  }
+
+  h3 {
+    font-family: 'Be Vietnam Pro', sans-serif;
+  }
+}
