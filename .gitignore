@@ -1,2 +1,11 @@
 node_modules/
 .env
+
+# Backup files
+backend/backups/
+backend/restores/
+*.sql
+
+# OS files
+.DS_Store
+Thumbs.db
