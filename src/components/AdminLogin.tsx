@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { motion } from 'motion/react';
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
+import { API_BASE_URL } from '../config/api';
+
 
 interface AdminLoginProps {
   onBack: () => void;
@@ -17,10 +19,10 @@ export function AdminLogin({ onBack, onLogin }: AdminLoginProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Reset errors
     const newErrors = { username: '', password: '', general: '' };
-    
+
     // Validate
     if (!username.trim()) {
       newErrors.username = 'Vui lòng nhập tên đăng nhập';
@@ -28,14 +30,15 @@ export function AdminLogin({ onBack, onLogin }: AdminLoginProps) {
     if (!password.trim()) {
       newErrors.password = 'Vui lòng nhập mật khẩu';
     }
-    
+
     setErrors(newErrors);
-    
+
     // If no errors, proceed with login
     if (!newErrors.username && !newErrors.password) {
       setIsLoading(true);
       try {
-        const response = await fetch('http://localhost:3001/api/auth/login', {
+        const response = await fetch(`${API_BASE_URL}/auth/login`, {
+
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -231,7 +234,7 @@ export function AdminLogin({ onBack, onLogin }: AdminLoginProps) {
                     value={username}
                     onChange={(e) => {
                       setUsername(e.target.value);
-                      if (errors.username) setErrors({...errors, username: ''});
+                      if (errors.username) setErrors({ ...errors, username: '' });
                     }}
                     placeholder="Nhập tên đăng nhập"
                     className={`w-full px-6 py-4 bg-[#FFF3E0] border-2 ${errors.username ? 'border-red-500' : 'border-[#FFB800]'} focus:border-[#FF8F00] focus:ring-2 focus:ring-[#FF8F00] rounded-xl focus:outline-none h-14 text-lg`}
@@ -252,7 +255,7 @@ export function AdminLogin({ onBack, onLogin }: AdminLoginProps) {
                       value={password}
                       onChange={(e) => {
                         setPassword(e.target.value);
-                        if (errors.password) setErrors({...errors, password: ''});
+                        if (errors.password) setErrors({ ...errors, password: '' });
                       }}
                       placeholder="Nhập mật khẩu"
                       className={`w-full px-6 py-4 bg-[#FFF3E0] border-2 ${errors.password ? 'border-red-500' : 'border-[#FFB800]'} focus:border-[#FF8F00] focus:ring-2 focus:ring-[#FF8F00] rounded-xl focus:outline-none h-14 text-lg pr-12`}

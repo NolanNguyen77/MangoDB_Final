@@ -2,38 +2,39 @@
 // API CONFIGURATION FOR MANGO MANAGEMENT SYSTEM
 // =====================================================
 
-export const API_BASE_URL = 'http://localhost:3001/api';
+export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+
 
 export const API_ENDPOINTS = {
   // ============================================
   // QR SCANNER ENDPOINTS (UI2)
   // ============================================
   getProductByCode: (code: string) => `${API_BASE_URL}/products/${code}`,
-  
+
   // ============================================
   // ADMIN ENDPOINTS (UI4)
   // ============================================
-  
+
   // Products
   products: `${API_BASE_URL}/admin/products`,
   product: (id: number) => `${API_BASE_URL}/admin/products/${id}`,
-  
+
   // Varieties
   varieties: `${API_BASE_URL}/admin/varieties`,
   variety: (id: number) => `${API_BASE_URL}/admin/varieties/${id}`,
-  
+
   // Farms
   farms: `${API_BASE_URL}/admin/farms`,
   farm: (id: number) => `${API_BASE_URL}/admin/farms/${id}`,
-  
+
   // Batches
   batches: `${API_BASE_URL}/admin/batches`,
   batch: (id: number) => `${API_BASE_URL}/admin/batches/${id}`,
-  
+
   // QR Codes
   qrcodes: `${API_BASE_URL}/admin/qrcodes`,
   qrcode: (id: number) => `${API_BASE_URL}/admin/qrcodes/${id}`,
-  
+
   // Price History
   prices: `${API_BASE_URL}/admin/prices`,
   price: (id: number) => `${API_BASE_URL}/admin/prices/${id}`,
