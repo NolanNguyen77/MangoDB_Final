@@ -7,7 +7,14 @@ const jwt = require('jsonwebtoken');
 
 const app = express();
 const PORT = process.env.PORT || 3001; // ✅ Đổi từ 3000 → 3001
-const JWT_SECRET = process.env.JWT_SECRET || 'mango-secret-key-change-in-production';
+
+// Kiểm tra JWT_SECRET bắt buộc phải có
+if (!process.env.JWT_SECRET) {
+  console.error('❌ LỖI: JWT_SECRET không được định nghĩa trong file .env');
+  console.error('❌ Vui lòng thêm JWT_SECRET vào file .env để bảo mật ứng dụng');
+  process.exit(1);
+}
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Middleware
 app.use(cors());
