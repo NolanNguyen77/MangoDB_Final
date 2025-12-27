@@ -8,7 +8,8 @@ node_modules/
 # Backup files
 backend/backups/
 backend/restores/
-*.sql
+backend/backups/*.sql
+backend/restores/*.sql
 
 # OS files
 .DS_Store

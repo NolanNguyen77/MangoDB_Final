@@ -28,6 +28,7 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
   const [showModal, setShowModal] = useState(false);
   const [editingItem, setEditingItem] = useState<any | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<any | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Mango background
   const mangoImages = [
@@ -141,7 +142,7 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
     try {
       let endpoint = '';
       let id = 0;
-      
+
       switch (activeTab) {
         case 'products':
           endpoint = API_ENDPOINTS.product(item.product_id);
@@ -173,7 +174,13 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
       setDeleteConfirm(null);
       fetchData();
     } catch (err: any) {
-      alert('Lỗi khi xóa: ' + err.message);
+      // Hiển thị error modal thay vì browser alert
+      if (err.message.includes('violates foreign key') || err.message.includes('Lỗi server')) {
+        setErrorMessage('Không thể xóa vì còn dữ liệu liên quan!\n\nVui lòng xóa các mục phụ thuộc trước (VD: Xóa lô hàng trước khi xóa giống xoài).');
+      } else {
+        setErrorMessage('Lỗi khi xóa: ' + err.message);
+      }
+      setDeleteConfirm(null);
     }
   };
 
@@ -232,7 +239,7 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
       setEditingItem(null);
       fetchData();
     } catch (err: any) {
-      alert('Lỗi khi lưu: ' + err.message);
+      setErrorMessage('Lỗi khi lưu: ' + err.message);
     }
   };
 
@@ -283,11 +290,10 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-6 py-3 rounded-t-lg font-bold whitespace-nowrap transition-colors ${
-                  activeTab === tab.id
-                    ? 'bg-[#FFB300] text-white'
-                    : 'bg-white/60 text-gray-700 hover:bg-white/80'
-                }`}
+                className={`px-6 py-3 rounded-t-lg font-bold whitespace-nowrap transition-colors ${activeTab === tab.id
+                  ? 'bg-[#FFB300] text-white'
+                  : 'bg-white/60 text-gray-700 hover:bg-white/80'
+                  }`}
               >
                 {tab.icon} {tab.label}
               </button>
@@ -393,7 +399,7 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               className="bg-white rounded-2xl shadow-2xl border-4 border-red-500 p-8 max-w-md w-full"
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e: React.MouseEvent) => e.stopPropagation()}
             >
               <h3 className="text-2xl font-bold text-red-600 mb-4">⚠️ Xác nhận xóa</h3>
               <p className="text-gray-700 mb-6">Bạn có chắc chắn muốn xóa mục này? Hành động này không thể hoàn tác.</p>
@@ -411,6 +417,48 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
                   Xóa
                 </button>
               </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Error Modal */}
+      <AnimatePresence>
+        {errorMessage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+            onClick={() => setErrorMessage(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-2xl shadow-2xl border-4 border-red-500 p-8 max-w-md w-full"
+              onClick={(e: React.MouseEvent) => e.stopPropagation()}
+            >
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                  <span className="text-4xl">🚫</span>
+                </div>
+                <h3 className="text-2xl font-bold text-red-600">Không thể thực hiện</h3>
+              </div>
+              <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded mb-6">
+                <p className="text-gray-700 whitespace-pre-line">{errorMessage}</p>
+              </div>
+              <div className="bg-amber-50 border border-amber-300 rounded-lg p-4 mb-6">
+                <p className="text-amber-800 text-sm">
+                  <strong>💡 Gợi ý:</strong> Kiểm tra các tab khác để xóa dữ liệu phụ thuộc trước.
+                </p>
+              </div>
+              <button
+                onClick={() => setErrorMessage(null)}
+                className="w-full px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors font-bold"
+              >
+                Đã hiểu
+              </button>
             </motion.div>
           </motion.div>
         )}
@@ -451,11 +499,10 @@ function QRCodesTable({ data, searchTerm, onEdit, onDelete }: any) {
               <td className="px-4 py-3">{item.farm_name}</td>
               <td className="px-4 py-3">{item.harvest_date ? new Date(item.harvest_date).toLocaleDateString('vi-VN') : '-'}</td>
               <td className="px-4 py-3">
-                <span className={`px-3 py-1 rounded-full text-sm font-bold ${
-                  item.status === 'active' ? 'bg-green-200 text-green-800' :
+                <span className={`px-3 py-1 rounded-full text-sm font-bold ${item.status === 'active' ? 'bg-green-200 text-green-800' :
                   item.status === 'used' ? 'bg-gray-200 text-gray-800' :
-                  'bg-red-200 text-red-800'
-                }`}>
+                    'bg-red-200 text-red-800'
+                  }`}>
                   {item.status}
                 </span>
               </td>
@@ -715,11 +762,10 @@ function PricesTable({ data, searchTerm, onEdit, onDelete }: any) {
               <td className="px-4 py-3">{item.price_id}</td>
               <td className="px-4 py-3 font-bold">{item.variety_name}</td>
               <td className="px-4 py-3">
-                <span className={`px-2 py-1 rounded font-bold ${
-                  item.price_type === 'selling' ? 'bg-green-200 text-green-800' :
+                <span className={`px-2 py-1 rounded font-bold ${item.price_type === 'selling' ? 'bg-green-200 text-green-800' :
                   item.price_type === 'original' ? 'bg-blue-200 text-blue-800' :
-                  'bg-orange-200 text-orange-800'
-                }`}>
+                    'bg-orange-200 text-orange-800'
+                  }`}>
                   {item.price_type}
                 </span>
               </td>
@@ -769,11 +815,11 @@ function Modal({ activeTab, editingItem, onClose, onSave, products, varieties, f
           setFormData({ name: '', address: '', phone: '', website: '', certification: '' });
           break;
         case 'batches':
-          setFormData({ 
-            variety_id: varieties[0]?.variety_id || 1, 
+          setFormData({
+            variety_id: varieties[0]?.variety_id || 1,
             farm_id: farms[0]?.farm_id || 1,
             harvest_date: new Date().toISOString().split('T')[0],
-            expiry_date: new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0],
+            expiry_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
             grade: 'A',
             size: 'M',
             ripeness: 'chín',
@@ -785,10 +831,10 @@ function Modal({ activeTab, editingItem, onClose, onSave, products, varieties, f
           setFormData({ batch_id: batches[0]?.batch_id || 1, code: '', status: 'active' });
           break;
         case 'prices':
-          setFormData({ 
-            variety_id: varieties[0]?.variety_id || 1, 
-            price_type: 'selling', 
-            currency: 'VND', 
+          setFormData({
+            variety_id: varieties[0]?.variety_id || 1,
+            price_type: 'selling',
+            currency: 'VND',
             amount: 0,
             valid_from: new Date().toISOString().split('T')[0],
             valid_to: ''
